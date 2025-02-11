@@ -1,0 +1,65 @@
+---
+title: "remote_r_test"
+author: "Sam Bogan"
+date: "2025-02-11"
+output: html_document
+---
+What to do before running the R code below
+
+1. Install macFUSE and sshfs
+
+2. Create local working directory to mount to your remote directory
+
+3. In Github, create a new repo named remote_r_test
+
+4. Create a new version-controlled R project on your local device and associate it with the new repo
+
+5. Create a remote working directory as a destination for the repo on hb
+
+6. Transfer the .Rproj file and metadata to your new working directory on hb
+
+7. Mount using sshfs 
+
+```{bash}
+
+## For macos
+# Use homebrew for macFUSE
+brew install macFUSE
+
+# Install sshf at https://macfuse.github.io/
+
+# Create your local working directory
+mkdir ~/Documents/remote_r_test
+
+# Mount with sshfs
+sshfs snbogan@hb.ucsc.edu:/hb/home/snbogan/remote_r_test/ ~/Documents/remote_r_test
+
+```
+
+Run R code
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load packages
+library(tidyverse)
+
+```
+
+```{r}
+
+# Create and write some data
+test_df <- data.frame(var = c(1.1, 1.83, 3.067, 3.91),
+                      val = c(1,2,3,4))
+
+write.csv(test_df, "test.csv", row.names = FALSE)
+
+# Plot your fake data to show it in-line in the RMD
+ggplot(data = test_df,
+       aes(x = var, y = val)) +
+  geom_smooth(method = "lm") +
+  geom_point(size = 3) +
+  theme_classic(base_size = 15)
+
+```
+
