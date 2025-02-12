@@ -45,6 +45,8 @@ sshfs snbogan@hb.ucsc.edu:/hb/home/snbogan/remote_r_test/ ~/Documents/remote_r_t
 
 ```
 
+# Run some example R code in the console
+
 ```{r}
 
 # Create mock data in working directory
@@ -55,7 +57,6 @@ df <- data.frame(x = c("I", "am", "Sam"),
 write.csv(df, file = "test.csv", row.names = FALSE)
 
 ```
-
 
 # Start an interactive session and R in terminal: send commands to terminal
 
