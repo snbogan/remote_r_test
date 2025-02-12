@@ -4,6 +4,13 @@ author: "Sam Bogan"
 date: "2025-02-11"
 output: html_document
 ---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(root = "/hb/home/snbogan/remote_r_test/")
+
+```
+
 What to do before running the R code below
 
 1. Install macFUSE and sshfs
@@ -19,6 +26,8 @@ What to do before running the R code below
 6. Transfer the .Rproj file and metadata to your new working directory on hb
 
 7. Mount using sshfs 
+
+## bash commands for your local machine
 
 ```{bash}
 
@@ -36,30 +45,106 @@ sshfs snbogan@hb.ucsc.edu:/hb/home/snbogan/remote_r_test/ ~/Documents/remote_r_t
 
 ```
 
-Run R code
+```{r}
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Create mock data in working directory
+df <- data.frame(x = c("I", "am", "Sam"),
+                 y = c("Sam", "I", "am"))
 
-# Load packages
-library(tidyverse)
+# Export mock data to csv
+write.csv(df, file = "test.csv", row.names = FALSE)
 
 ```
+
+
+# Start an interactive session and R in terminal: send commands to terminal
+
+```{bash}
+
+## Send to terminal
+
+# Log in to hb
+ssh snbogan@hb.ucsc.edu
+
+# Start interactive session
+salloc --account=pi-jkoc --partition=lab-colibri --qos=pi-jkoc --ntasks=1 --cpus-per-task=4 --mem=16G --time=04:00:00
+
+# Check node allocation
+hostname
+
+# Load and start R
+module load r
+
+R
+
+```
+
+## Run R code in through terminal
 
 ```{r}
 
-# Create and write some data
-test_df <- data.frame(var = c(1.1, 1.83, 3.067, 3.91),
-                      val = c(1,2,3,4))
+# Load packages
+library(tidyverse)
+library(MASS)
 
-write.csv(test_df, "test.csv", row.names = FALSE)
+# Move to working directory
+setwd('/hb/home/snbogan/remote_r_test')
+
+## Send to console
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define the number of observations
+n <- 100000
+
+# Define the mean and standard deviation for the two variables
+mean_X <- 50
+sd_X <- 10
+mean_Y <- 30
+sd_Y <- 5
+
+# Define the correlation coefficient
+rho <- 0.7  # Adjust as needed
+
+# Create the covariance matrix
+cov_matrix <- matrix(c(sd_X^2, rho * sd_X * sd_Y, 
+                       rho * sd_X * sd_Y, sd_Y^2), 
+                     nrow = 2)
+
+# Simulate the data
+sim_data <- mvrnorm(n, mu = c(mean_X, mean_Y), Sigma = cov_matrix)
+
+# Convert to a data frame
+df2 <- data.frame(X = sim_data[, 1], Y = sim_data[, 2])
 
 # Plot your fake data to show it in-line in the RMD
-ggplot(data = test_df,
-       aes(x = var, y = val)) +
-  geom_smooth(method = "lm") +
-  geom_point(size = 3) +
+fig <- ggplot(data = df,
+       aes(x = X, y = Y)) +
+  geom_point(size = 1, alpha = .25) +
   theme_classic(base_size = 15)
 
+write.csv(df2, "test2.csv", row.names = FALSE)
+
+save(fig, file = "fig.Rdata")
+
 ```
+
+Run R commands on local console
+
+```{r}
+
+# Read in and print the datasheet
+test_df <- read.csv("test.csv")
+
+test_df
+
+# Load and print your fig.Rdata
+load("fig.Rdata")
+
+# Print the loaded fig
+fig
+
+```
+
 
